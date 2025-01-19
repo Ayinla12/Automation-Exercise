@@ -114,8 +114,6 @@ public class AddToCart {
         Assert.assertEquals(totalPrice1, price1 * quantity1);
         Assert.assertEquals(totalPrice2, price2 * quantity2);
 
-        System.out.println("total price for p1 is " + totalPrice1);
-        System.out.println("total price for p2 is " + totalPrice2);
-
     }
+
 }
