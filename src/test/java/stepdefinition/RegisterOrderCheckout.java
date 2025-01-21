@@ -1,39 +1,28 @@
 package stepdefinition;
 
 import com.github.javafaker.Faker;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
+
+
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.github.bonigarcia.wdm.WebDriverManager;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
-import java.time.Duration;
+
+import static driver.DriverFactory.getDriver;
 
 public class RegisterOrderCheckout {
-    private WebDriver driver;
+    private WebDriver driver = getDriver();
     Faker faker = new Faker();
     private String username;
 
-    @Before("@registerOrder")
-    public void setup() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-    }
-
-    @After("@registerOrder")
-    public void tearDown() {
-        driver.quit();
-    }
 
     @Given("the user accesses the automation exercise home page")
     public void the_user_accesses_the_automation_exercise_home_page() {

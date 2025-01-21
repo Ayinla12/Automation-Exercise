@@ -1,36 +1,25 @@
 package stepdefinition;
 
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
+
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.github.bonigarcia.wdm.WebDriverManager;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+
 import org.testng.Assert;
 
-import java.time.Duration;
+
 import java.util.List;
 
+import static driver.DriverFactory.getDriver;
+
 public class SearchProduct {
-    public WebDriver driver;
+    public WebDriver driver = getDriver();
 
-    @Before("@searchProduct")
-    public void setup() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-    }
-
-    @After("@searchProduct")
-    public void teardown() {
-        driver.quit();
-    }
 
     @Given("I access the Automation Exercise home page")
     public void i_access_the_automation_exercise_home_page() {
