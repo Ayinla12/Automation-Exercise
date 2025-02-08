@@ -13,21 +13,30 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import pageobjects.Base_PO;
+import pageobjects.RemoveFromCart_PO;
 
 import java.time.Duration;
 import java.util.List;
 
 import static driver.DriverFactory.getDriver;
 
-public class RemoveFromCart {
+public class RemoveFromCart extends Base_PO {
     private WebDriver driver = getDriver();
+
+    private RemoveFromCart_PO removeFromCart_po;
+
+    public RemoveFromCart(RemoveFromCart_PO removeFromCart_po) {
+        this.removeFromCart_po = removeFromCart_po;
+    }
 
 
     @Given("user accesses the automation exercise home page")
     public void user_accesses_the_automation_exercise_home_page() {
-        driver.get("https://automationexercise.com/");
+
+        removeFromCart_po.navigateTo_Automation_Exercise_Home_Page();
         try {
-            driver.findElement(By.xpath("//button[@aria-label='Consent']")).click();
+            waitForElementAndClick(By.xpath("//button[@aria-label='Consent']"));
         } catch (Exception e) {
             System.out.println("Consent button not displayed");
         }
@@ -35,52 +44,47 @@ public class RemoveFromCart {
 
     @And("verifies the home page is visible successfully")
     public void verifies_the_home_page_is_visible_successfully() {
-        String pageTitle = driver.getTitle();
-        Assert.assertEquals(pageTitle, "Automation Exercise");
+
+        removeFromCart_po.verify_Home_Page();
 
     }
 
     @When("user adds products to the cart")
     public void user_adds_products_to_the_cart() {
-        driver.findElement(By.xpath("//div[@class='productinfo text-center']//a[@data-product-id='4']")).click();
-        driver.findElement(By.xpath("//button[contains(text(),'Continue Shopping')]")).click();
 
-        driver.findElement(By.xpath("//div[@class='productinfo text-center']//a[@data-product-id='5']")).click();
+        removeFromCart_po.addProduct_To_Cart();
+
+        removeFromCart_po.clickOn_Continue_Shopping();
+
+        removeFromCart_po.addAnother_Product_To_Cart();
 
     }
 
     @And("clicks on the view cart button")
     public void clicks_on_the_view_cart_button() {
-        driver.findElement(By.xpath("//u[contains(text(),'View Cart')]")).click();
+
+        removeFromCart_po.clickOn_View_Cart_Button();
 
     }
 
     @Then("verifies that the cart page is displayed")
     public void verifies_that_the_cart_page_is_displayed() {
-        String pageUrl = driver.getCurrentUrl();
-        Assert.assertEquals(pageUrl, "https://automationexercise.com/view_cart");
+
+        removeFromCart_po.verify_URL();
 
     }
 
     @And("clicks on the X button corresponding to a particular product")
     public void clicks_on_the_x_button_corresponding_to_a_particular_product() {
-        driver.findElement(By.xpath("//a[@data-product-id='4']")).click();
+
+        removeFromCart_po.clickOn_X_Button();
 
     }
 
     @And("verifies that the product is removed from the cart")
     public void verifies_that_the_product_is_removed_from_the_cart() {
-        List<WebElement> cartSize = driver.findElements(By.className("cart_product"));
-        int initialCartSize = cartSize.size();
 
-        // waits for product to be removed
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.stalenessOf(cartSize.get(0)));
-
-        List<WebElement> currentCartSize = driver.findElements(By.className("cart_product"));
-        int finalCartSize = currentCartSize.size();
-
-        Assert.assertEquals(finalCartSize, initialCartSize - 1);
+        removeFromCart_po.verify_Final_Cart_Size();
 
     }
 

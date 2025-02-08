@@ -14,33 +14,43 @@ import org.openqa.selenium.WebElement;
 
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
+import pageobjects.Base_PO;
+import pageobjects.RegisterOrderCheckout_PO;
 
 
 import static driver.DriverFactory.getDriver;
 
-public class RegisterOrderCheckout {
+public class RegisterOrderCheckout extends Base_PO {
     private WebDriver driver = getDriver();
     Faker faker = new Faker();
     private String username;
 
+    private RegisterOrderCheckout_PO registerOrderCheckout_po;
+
+    public RegisterOrderCheckout(RegisterOrderCheckout_PO registerOrderCheckout_po) {
+        this.registerOrderCheckout_po = registerOrderCheckout_po;
+    }
+
 
     @Given("the user accesses the automation exercise home page")
     public void the_user_accesses_the_automation_exercise_home_page() {
-        driver.get("https://automationexercise.com/");
+
+        registerOrderCheckout_po.navigateTo_Automation_Exercise_Home_Page();
+
         try {
-            driver.findElement(By.xpath("//button[@aria-label='Consent']")).click();
+            waitForElementAndClick(By.xpath("//button[@aria-label='Consent']"));
         } catch (Exception e) {
             System.out.println("Consent button not present");
         }
 
-        String pageTitle = driver.getTitle();
-        Assert.assertEquals(pageTitle, "Automation Exercise");
+        registerOrderCheckout_po.verify_Home_Page();
 
     }
 
     @When("the user clicks the signup-login button")
     public void the_user_clicks_the_signup_login_button() {
-        driver.findElement(By.partialLinkText("Signup / Login")).click();
+
+        registerOrderCheckout_po.clickOn_Signup_Login_Button();
 
     }
 
@@ -49,6 +59,7 @@ public class RegisterOrderCheckout {
         // Generate dynamic test data
         username = faker.name().username();
         String email = faker.internet().emailAddress();
+        String password = faker.number().digits(6);
         String firstname = faker.name().firstName();
         String lastname = faker.name().lastName();
         String company = faker.company().name();
@@ -60,112 +71,104 @@ public class RegisterOrderCheckout {
         String mobileNumber = faker.number().digits(11);
 
         //Fill signup details
-        driver.findElement(By.xpath("//input[@data-qa='signup-name']")).sendKeys(username);
-        driver.findElement(By.xpath("//input[@data-qa='signup-email']")).sendKeys(email);
-        driver.findElement(By.xpath("//button[@data-qa='signup-button']")).click();
+        registerOrderCheckout_po.setSignup_Name(username);
+        registerOrderCheckout_po.setSignup_Email(email);
+        registerOrderCheckout_po.clickOn_Signup_Button();
 
         // Fill account information
-        driver.findElement(By.id("id_gender1")).click();
-        String password = faker.number().digits(6);
-        driver.findElement(By.id("password")).sendKeys(password);
-        WebElement daysField = driver.findElement(By.id("days"));
-        Select select = new Select(daysField);
-        select.selectByIndex(10);
-        WebElement monthsField = driver.findElement(By.id("months"));
-        Select months = new Select(monthsField);
-        months.selectByValue("10");
-        WebElement yearField = driver.findElement(By.id("years"));
-        Select years = new Select(yearField);
-        years.selectByVisibleText("2000");
+        registerOrderCheckout_po.setGender();
+        registerOrderCheckout_po.setPassword(password);
+        registerOrderCheckout_po.setDay();
+        registerOrderCheckout_po.setMonth();
+        registerOrderCheckout_po.setYear();
 
         // signup to newsletter and special offers
-        driver.findElement(By.id("newsletter")).click();
-        driver.findElement(By.id("optin")).click();
+        registerOrderCheckout_po.setNewsLetter();
+        registerOrderCheckout_po.setSpecial_Offers();
 
         // Fill Address Information
-        driver.findElement(By.id("first_name")).sendKeys(firstname);
-        driver.findElement(By.id("last_name")).sendKeys(lastname);
-        driver.findElement(By.id("company")).sendKeys(company);
-        driver.findElement(By.id("address1")).sendKeys(address1);
-        driver.findElement(By.id("address2")).sendKeys(address2);
+        registerOrderCheckout_po.setFirstName(firstname);
+        registerOrderCheckout_po.setLastName(lastname);
+        registerOrderCheckout_po.setCompany_Name(company);
+        registerOrderCheckout_po.setAddress_One(address1);
+        registerOrderCheckout_po.setAddress_Two(address2);
+        registerOrderCheckout_po.setCountry();
+        registerOrderCheckout_po.setSate(state);
+        registerOrderCheckout_po.setCity(city);
+        registerOrderCheckout_po.setZipcode(zipcode);
+        registerOrderCheckout_po.setMobileNumber(mobileNumber);
 
-        WebElement country = driver.findElement(By.id("country"));
-        Select selectCountry = new Select(country);
-        selectCountry.selectByIndex(2);
-        driver.findElement(By.id("state")).sendKeys(state);
-        driver.findElement(By.id("city")).sendKeys(city);
-        driver.findElement(By.id("zipcode")).sendKeys(zipcode);
-        driver.findElement(By.id("mobile_number")).sendKeys(mobileNumber);
-        driver.findElement(By.xpath("//button[@data-qa='create-account']")).click();
+        registerOrderCheckout_po.createAccount();
 
     }
 
     @And("the user verifies ACCOUNT CREATED is displayed")
     public void the_user_verifies_account_created_is_displayed() {
-        String accountCreationMessage = driver.findElement(By.xpath("//h2[@data-qa='account-created']//b")).getText().toLowerCase();
-        Assert.assertEquals(accountCreationMessage, "account created!");
-        System.out.println("the message is " + accountCreationMessage);
+
+        registerOrderCheckout_po.verify_Account_created_Message();
 
     }
 
     @And("the user clicks on the continue button")
     public void the_user_clicks_on_the_continue_shopping() {
-        driver.findElement(By.xpath("//a[@data-qa='continue-button']")).click();
+
+        registerOrderCheckout_po.clickOn_Continue_Button();
 
     }
 
     @And("the user verifies logged in as username is displayed at the top")
     public void the_user_verifies_logged_in_as_username_is_displayed_at_the_top() {
-        String userName = driver.findElement(By.xpath("//*[@id=\"header\"]/div/div/div/div[2]/div/ul/li[10]/a/b")).getText();
-        Assert.assertEquals(userName, username);
-        System.out.println("this is the correct username " + userName);
+
+        registerOrderCheckout_po.verify_username(username);
 
     }
 
     @And("the user adds products to the cart")
     public void the_user_adds_products_to_the_cart() {
-        driver.findElement(By.xpath("//body/section[2]/div[1]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/a[1]")).click();
+
+        registerOrderCheckout_po.addProduct_To_The_Cart();
 
     }
 
     @And("the user clicks the cart button")
     public void the_user_clicks_the_cart_button() {
-        driver.findElement(By.xpath("//u[contains(text(),'View Cart')]")).click();
+
+        registerOrderCheckout_po.clickOn_View_Cart_Button();
 
     }
 
     @And("the user verifies the cart page is displayed")
     public void the_user_verifies_the_cart_page_is_displayed() {
-        String currentUrl = driver.getCurrentUrl();
-        Assert.assertEquals(currentUrl, "https://automationexercise.com/view_cart");
+
+        registerOrderCheckout_po.verify_URL();
     }
 
     @And("the user clicks Proceed to Checkout")
     public void the_user_clicks_proceed_to_checkout() {
-        driver.findElement(By.xpath("//div[@class='col-sm-6']//a[@class='btn btn-default check_out']")).click();
+
+        registerOrderCheckout_po.clickOn_Checkout_Button();
 
     }
 
     @And("the user verifies Address Details and Review Your Order are displayed")
     public void the_user_verifies_address_details_and_review_your_order_are_displayed() {
-        WebElement addressDetails = driver.findElement(By.xpath("//h2[contains(text(),'Address Details')]"));
-        Assert.assertTrue(addressDetails.isDisplayed());
 
-        WebElement reviewOrder = driver.findElement(By.xpath("//h2[contains(text(),'Review Your Order')]"));
-        Assert.assertTrue(reviewOrder.isDisplayed());
+        registerOrderCheckout_po.verify_Address_Details();
+        registerOrderCheckout_po.verify_Review();
 
     }
 
     @And("the user enters a description in the comment text area")
     public void the_user_enters_a_description_in_the_comment_text_area() {
         String comment = faker.lorem().sentence(4);
-        driver.findElement(By.xpath("//textarea[@name='message']")).sendKeys(comment);
+        registerOrderCheckout_po.setComment(comment);
 
     }
 
     @And("the user clicks the Place Order button")
     public void the_user_clicks_the_place_order_button() {
-        driver.findElement(By.xpath("//a[contains(text(),'Place Order')]")).click();
+
+        registerOrderCheckout_po.clickOn_Place_Order_Button();
 
     }
 
@@ -177,44 +180,47 @@ public class RegisterOrderCheckout {
         String expiryMonth = String.valueOf(faker.number().numberBetween(1, 12));
         String expiryYear = String.valueOf(faker.number().numberBetween(2026, 2030));
 
-        // Fill payment details
-        driver.findElement(By.name("name_on_card")).sendKeys(username);
-        driver.findElement(By.name("card_number")).sendKeys(cardNumber);
-        driver.findElement(By.name("cvc")).sendKeys(cvc);
-        driver.findElement(By.name("expiry_month")).sendKeys(expiryMonth);
-        driver.findElement(By.name("expiry_year")).sendKeys(expiryYear);
+        // fill payment details
+        registerOrderCheckout_po.setName_On_Card(username);
+        registerOrderCheckout_po.setCard_Number(cardNumber);
+        registerOrderCheckout_po.setCvc(cvc);
+        registerOrderCheckout_po.setExpiry_Month(expiryMonth);
+        registerOrderCheckout_po.setExpiry_Year(expiryYear);
 
     }
 
     @And("the user clicks the Pay and Confirm Order button")
     public void the_user_clicks_the_pay_and_confirm_order_button() {
-        driver.findElement(By.id("submit")).click();
+
+        registerOrderCheckout_po.clickOn_Pay_Confirm_Order_Button();
 
     }
 
     @Then("the user verifies the success message {string}")
     public void the_user_verifies_the_success_message(String successMessage) {
-        WebElement confirmationMessage = driver.findElement(By.xpath("//p[contains(text(),'Congratulations! Your order has been confirmed!')]"));
-        Assert.assertEquals(confirmationMessage.getText(), successMessage);
+
+        registerOrderCheckout_po.verify_Success_Message(successMessage);
 
     }
 
     @And("the user clicks the Delete Account button")
     public void the_user_clicks_the_delete_account_button() {
-        driver.findElement(By.partialLinkText("Delete Account")).click();
+
+        registerOrderCheckout_po.clickOn_Delete_Account_Button();
 
     }
 
     @And("the user verifies ACCOUNT DELETED is displayed")
     public void the_user_verifies_account_deleted_is_displayed() {
-        String deletionMessage = driver.findElement(By.xpath("//div[@class='col-sm-9 col-sm-offset-1']//b")).getText();
-        Assert.assertEquals(deletionMessage, "ACCOUNT DELETED!");
+
+        registerOrderCheckout_po.verify_Account_deletion();
 
     }
 
     @And("the user clicks the Continue button")
     public void the_user_clicks_the_continue_button() {
-        driver.findElement(By.xpath("//a[contains(text(),'Continue')]")).click();
+
+        registerOrderCheckout_po.clickOn_The_Continue_Button();
 
     }
 
